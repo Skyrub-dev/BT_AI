@@ -8,6 +8,8 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__()
 
+        #NEED TO CHANGE THESE
+        
         # Create a button to open an image file
         self.file_button = tk.Button(self, text='Open Image', command=self.open_file)
         self.file_button.pack()
@@ -21,28 +23,40 @@ class App(tk.Tk):
         self.prediction_label.pack()
 
         # Load the model
-        self.model = tf.keras.models.load_model('model.h5')
+        self.model = tf.keras.models.load_model('bt_ai_test2-67acc-1lss-20-03-23.h5', compile=False)
 
     def open_file(self):
-        # Open a file dialog to choose an image file
         filepath = filedialog.askopenfilename()
 
-        # Open the image and resize it to 128x128
         image = Image.open(filepath)
-        image = image.resize((128, 128))
+        image = image.resize((224, 224))
 
-        # Convert the image to a numpy array and preprocess it for the model
         image_array = np.array(image)
         image_array = image_array / 255.0
         image_array = np.expand_dims(image_array, axis=0)
 
-        # Make a prediction using the model
-        predictions = self.model.predict(image_array)
-        prediction = np.argmax(predictions[0])
+        prediction = self.model.predict(image_array)
+        prediction = np.argmax(prediction,axis=1)[0]
 
-        # Update the image and prediction labels
+        #ImageShow.show(image)
+        photo=ImageTk.PhotoImage(image)
+        cv = tk.Canvas()
+        cv.create_image(224, 224, image=photo, anchor='n')
         self.image_label.configure(image=ImageTk.PhotoImage(image))
         self.prediction_label.configure(text=f'Prediction: {prediction}')
+
+        if prediction == 0:
+          print("glioma identified")
+          self.prediction_label.configure(text=f'glioma identified')
+        if prediction == 1:
+          print("meningioma identified")
+          self.prediction_label.configure(text=f'meningioma identified')
+        if prediction == 2:
+          print("No tumor identified")
+          self.prediction_label.configure(text=f'no tumor identified')
+        if prediction == 3:
+          print("pituitary identified")
+          self.prediction_label.configure(text=f'pituitary identified')
 
 if __name__ == '__main__':
     app = App()
