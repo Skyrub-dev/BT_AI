@@ -14,16 +14,19 @@ class App(tk.Tk):
         self.file_button = tk.Button(self, text='Open Image', command=self.open_file)
         self.file_button.pack()
 
-        # Create a label to display the image
         self.image_label = tk.Label(self)
         self.image_label.pack()
+        
+        # Create a label to display the image
+        self.canvas = tk.Canvas(self, width=224, height=224)
+        self.canvas.pack()
 
         # Create a label to display the model's prediction
         self.prediction_label = tk.Label(self)
         self.prediction_label.pack()
 
         # Load the model
-        self.model = tf.keras.models.load_model('bt_ai_test2-67acc-1lss-20-03-23.h5', compile=False)
+        self.model = tf.keras.models.load_model('C:/Users/tomke/Downloads/model/bt_ai_test2-67acc-1lss-20-03-23.h5', compile=False)
 
     def open_file(self):
         filepath = filedialog.askopenfilename()
@@ -39,11 +42,16 @@ class App(tk.Tk):
         prediction = np.argmax(prediction,axis=1)[0]
 
         #ImageShow.show(image)
-        photo=ImageTk.PhotoImage(image)
-        cv = tk.Canvas()
-        cv.create_image(224, 224, image=photo, anchor='n')
-        self.image_label.configure(image=ImageTk.PhotoImage(image))
+        #self.canvas.delete('all')
+        #photo = ImageTk.PhotoImage(image)
+        #print(photo)
+        #self.canvas.create_image(0, 0, anchor='nw', image=photo)
+        #self.image_label.configure(image=photo)
+        photo = ImageTk.PhotoImage(image)
+        self.image_label.configure(image=photo)
+        self.image_label.image = photo
         self.prediction_label.configure(text=f'Prediction: {prediction}')
+        
 
         if prediction == 0:
           print("glioma identified")
