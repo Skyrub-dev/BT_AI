@@ -8,7 +8,6 @@ root.wm_title("Tumor classification")
 root.maxsize(1920, 1080)
 root.resizable(width = True, height = True)
 
-
 canvas = Canvas(root, width=1920, height=1080)
 canvas.grid(row=0, column=1, padx=10, pady=5)
 
@@ -41,6 +40,7 @@ canvas.create_window(250, 50, anchor='nw', window=right_frame)
 
 # Create frames and labels in left_frame
 #Label(left_frame, text="Original Image").grid(row=0, column=0, padx=5, pady=5)
+
 def info():
     window = Toplevel()
     window.wm_title("Info")
@@ -85,4 +85,6 @@ def open_img():
 Button(top_frame, text='open image', command = open_img).pack(side=LEFT, padx=5, pady=5)
 Button(top_frame, text='About model', command=info).pack(side=LEFT, padx=5, pady=5)
 
+#Initial warning message
+messagebox.showinfo("Information", "Before using this software, please be aware that any AI predictions may not be fully accurate. For more information, visit the Github page, or click 'About model' for more info")
 root.mainloop()
