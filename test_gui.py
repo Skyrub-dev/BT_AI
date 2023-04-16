@@ -9,7 +9,6 @@ class App(tk.Tk):
         super().__init__()
 
         #NEED TO CHANGE THESE
-        
         # Create a button to open an image file
         self.file_button = tk.Button(self, text='Open Image', command=self.open_file)
         self.file_button.pack()
@@ -21,12 +20,14 @@ class App(tk.Tk):
         self.canvas = tk.Canvas(self, width=224, height=224)
         self.canvas.pack()
 
-        # Create a label to display the model's prediction
-        self.prediction_label = tk.Label(self)
-        self.prediction_label.pack()
-
+        self.predictions_labels = []
+        for i in range(4):
+            label = tk.Label(self)
+            label.pack()
+            self.predictions_labels.append(label)
+        
         # Load the model
-        self.model = tf.keras.models.load_model('C:/Users/tomke/Downloads/model/bt_ai_test2-67acc-1lss-20-03-23.h5', compile=False)
+        self.model = tf.keras.models.load_model('C:/Users/tomke/Downloads/model/bt_ai_EXP3-91acc-04lss-08-04-23.h5', compile=False)
 
     def open_file(self):
         filepath = filedialog.askopenfilename()
@@ -38,8 +39,30 @@ class App(tk.Tk):
         image_array = image_array / 255.0
         image_array = np.expand_dims(image_array, axis=0)
 
-        prediction = self.model.predict(image_array)
-        prediction = np.argmax(prediction,axis=1)[0]
+        #prediction = self.model.predict(image_array)
+        #prediction = np.argmax(prediction,axis=1)[0]
+
+        predictions = self.model.predict(image_array)[0]
+        for i in range(4):
+            label = ""
+            if i == 0:
+                label = "Glioma confidence"
+            elif i == 1:
+                label = "Meningioma confidence"
+            elif i == 2:
+                label = "No tumor confidence"
+            else:
+                label = "Pituitary confidence"
+            score = predictions[i]
+            self.predictions_labels[i].configure(text=f"{label}: {score:.2%}")
+
+        
+
+        #new_pred[0] == "glioma"
+        #new_pred[1] == "pituitary"
+
+
+        #percent = prediction * 100
 
         #ImageShow.show(image)
         #self.canvas.delete('all')
@@ -50,21 +73,22 @@ class App(tk.Tk):
         photo = ImageTk.PhotoImage(image)
         self.image_label.configure(image=photo)
         self.image_label.image = photo
-        self.prediction_label.configure(text=f'Prediction: {prediction}')
+        #confidence = percent[0][prediction]
+        #self.first_prediction.configure(text=f'Predicted type: {first_score} (Prediction confidence: {confidence:.2f}%)')
+        #self.second_prediction.configure(text=f'Predicted type: {second_score} (Prediction confidence: {confidence:.2f}%)')
+        #self.third_prediction.configure(text=f'Predicted type: {third_score} (Prediction confidence: {confidence:.2f}%)')
+        #self.fourth_prediction.configure(text=f'Predicted type: {fourth_score} (Prediction confidence: {confidence:.2f}%)')
+        #print("first score", first_score)
+        #print("sec score", second_score)
+        #print("thrd score", third_score)
+
+        #grad-cam images
+        def gradCam(image, intensity=0.5):
+            with tf.GradientTape() as tape:
+                final_layer = self.model.get_layer('conv2d_11')
         
 
-        if prediction == 0:
-          print("glioma identified")
-          self.prediction_label.configure(text=f'glioma identified')
-        if prediction == 1:
-          print("meningioma identified")
-          self.prediction_label.configure(text=f'meningioma identified')
-        if prediction == 2:
-          print("No tumor identified")
-          self.prediction_label.configure(text=f'no tumor identified')
-        if prediction == 3:
-          print("pituitary identified")
-          self.prediction_label.configure(text=f'pituitary identified')
+        
 
 if __name__ == '__main__':
     app = App()
